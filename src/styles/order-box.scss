@@ -1,0 +1,17 @@
+.order-box {
+    display: block;
+    width:100%;
+    padding: 15px 40px;
+    .userName,.roleName{
+        width: 200px;
+    }
+    .tableAvailable{
+        width: 90px;
+    }
+    .pagination{
+        text-align: right;
+    }
+    .dataTable {
+        min-width: 100%;
+    }
+}

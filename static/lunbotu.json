@@ -1,0 +1,20 @@
+{
+    "a": 1,
+    "data": [{
+        "imgurl": "../static/1.jpg"
+    }, {
+        "imgurl": "../static/2.jpg"
+    }, {
+        "imgurl": "../static/3.jpg"
+    }, {
+        "imgurl": "../static/4.jpg"
+    }, {
+        "imgurl": "../static/5.jpg"
+    }, {
+        "imgurl": "../static/6.jpg"
+    }, {
+        "imgurl": "../static/7.jpg"
+    }, {
+        "imgurl": "../static/8.jpg"
+    }]
+}
