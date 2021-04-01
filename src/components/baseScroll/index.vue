@@ -1,5 +1,7 @@
 <template>
-  <div ref="wrapper"><slot></slot></div>
+  <div ref="wrapper">
+    <slot></slot>
+  </div>
 </template>
 
 <script type="text/ecmascript-6">
@@ -43,13 +45,13 @@ export default {
       default: DIRECTION_V
     }
   },
-  mounted() {
+  mounted () {
     setTimeout(() => {
       this._initScroll()
     }, 20)
   },
   methods: {
-    _initScroll() {
+    _initScroll () {
       if (!this.$refs.wrapper) {
         return
       }
@@ -78,24 +80,24 @@ export default {
         })
       }
     },
-    disable() {
+    disable () {
       this.scroll && this.scroll.disable()
     },
-    enable() {
+    enable () {
       this.scroll && this.scroll.enable()
     },
-    refresh() {
+    refresh () {
       this.scroll && this.scroll.refresh()
     },
-    scrollTo() {
+    scrollTo () {
       this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
     },
-    scrollToElement() {
+    scrollToElement () {
       this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
     }
   },
   watch: {
-    data() {
+    data () {
       setTimeout(() => {
         this.refresh()
       }, this.refreshDelay)

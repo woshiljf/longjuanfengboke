@@ -1,5 +1,5 @@
 	<template>
-  <div class="musicPlay">
+  <div class="mymusicPlay">
     <audio :src="musicUrl" autoplay class="playMusicAudio" ref="audio" @canplay="getDuration"
       @timeupdate="durationUpdate"></audio>
 
@@ -11,11 +11,11 @@
           <div class="iconClass">
             <i class="el-icon-caret-left" @click="playPre"></i>
           </div>
-          <!-- 停止 -->
+          <!-- 停止 等于号-->
           <div v-show="isPlaying" class="iconClass1 iconClass" @click="pauseSong">
             <i class="el-icon-video-pause"></i>
           </div>
-
+          <!-- 播放 三角形 -->
           <div v-show="!isPlaying" class="iconClass1 iconClass" @click="playSong">
             <i class="el-icon-video-play"></i>
           </div>
@@ -26,8 +26,9 @@
         </div>
 
         <div class="navBar">
-          <el-slider id="sildbar" v-model="musicDuration" :max="musicAllDuration" :show-tooltip="false"
-            @change="changeMusicDuration" @mousedown.native="isChange = true" @mouseup.native="isChange = false">
+          <el-slider id="sildbar" style="color： red" v-model="musicDuration" :max="musicAllDuration"
+            :show-tooltip="false" @change="changeMusicDuration" @mousedown.native="isChange = true"
+            @mouseup.native="isChange = false">
           </el-slider>
           <!-- 时间刻度 -->
         </div>
@@ -72,12 +73,12 @@ export default {
   },
   filters: {
     formatDate: function (time) {
-
+      if (typeof time !== 'number') return
       var m = parseInt(time / 60)
 
       var s = parseInt(time % 60)
-      m = m > 10 ? m : '0' + m
-      s = s > 10 ? s : '0' + s
+      m = m >= 10 ? m : '0' + m
+      s = s >= 10 ? s : '0' + s
       return m + ":" + s;
     }
   },
@@ -152,16 +153,22 @@ export default {
     },
     // 播放下一首
     playNext () {
+      console.log('执行了吗');
       // 获取当前歌单的播放列表
+      this.isPlaying = false
+
       this.getPlayId(1)
       //播放歌曲
+
       var playI = this.playIndex
       this.$store.commit('changePlayButtonIndex', playI + 1)
+
       this.nowPlayMuisc()
     },
     // 播放上一首
     playPre () {
       if (this.getPlayId(-1)) {
+        this.isPlaying = false
         var playI = this.playIndex
         this.$store.commit('changePlayButtonIndex', playI - 1)
         this.nowPlayMuisc()
@@ -175,6 +182,7 @@ export default {
 
       var index = dataList.indexOf(nowPlayId)  //得到当前的播放index
       if (index + p <= dataList.length - 1 && index + p >= 0) {
+
         console.log('index-p', index + p);
         this.params.id = dataList[index + p]
         this.$store.commit('changeNowPlayId', this.params.id)
@@ -211,6 +219,7 @@ export default {
         console.log(e);
       }).finally(e => {
         this.$store.commit('changeNowPlayId', this.params.id)
+        this.isPlaying = true
       })
     }
 
@@ -218,46 +227,42 @@ export default {
 }
 </script>
 
-<style scoped>
-/* 音乐播放栏 */
-
-.block {
-  display: flex;
-  justify-content: center;
-  align-content: center;
-}
-.playControl {
-  vertical-align: bottom;
-  display: flex;
-  cursor: pointer;
-}
-.navBar {
-  width: 80%;
-  height: 80px;
-  line-height: 80px;
-  box-sizing: border-box;
-  padding-top: 18px;
-  cursor: pointer;
-  margin-right: 10px;
-}
-.iconClass {
-  font-size: 40px;
-  /* line-height: 5px; */
-  margin-right: 15px;
-  height: 80px;
-}
-.iconClass:hover {
-  color: red;
-}
-
-.iconClass1 {
-  border: 0;
-}
-
-#playSlider {
-  width: 43%;
-  margin-top: -5px;
-  margin-left: 50%;
-  transform: translateX(-50%);
+<style lang="scss" scoped>
+.mymusicPlay {
+  .block {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+  }
+  .playControl {
+    vertical-align: bottom;
+    display: flex;
+    cursor: pointer;
+  }
+  .navBar {
+    width: 50%;
+    height: 80px;
+    line-height: 80px;
+    box-sizing: border-box;
+    padding-top: 18px;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  .iconClass {
+    font-size: 40px;
+    /* line-height: 5px; */
+    margin-right: 15px;
+    height: 80px;
+  }
+  .iconClass:hover {
+    color: red;
+  }
+  .iconClass1 {
+    border: 0;
+  }
+  .el-slider__bar {
+    background-color: red;
+  }
 }
 </style>
+

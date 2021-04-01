@@ -1,0 +1,11 @@
+.footerBar {
+    .mymusicPlay {
+        .el-slider__runway.disabled .el-slider__bar {
+            background-color: #e0eaf3;
+        }
+        .el-slider__bar {
+            background-color: red;
+            height: 15px;
+        }
+    }
+}

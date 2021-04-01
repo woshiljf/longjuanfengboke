@@ -226,6 +226,7 @@ export default {
         cAvatarUrl: "",
         cNickName: ""
       },
+      userImg: '',
       // 歌单信息
       playListInfo: {
         trackCount: 0, //歌单曲目数量
@@ -283,7 +284,11 @@ export default {
     this.getComment();
     this.getPlaylist();
     this.getRelatedList();
-    this.userImg = JSON.parse(sessionStorage.getItem("userImage")).userImage
+    try {
+      this.userImg = JSON.parse(sessionStorage.getItem("userImage")).userImage
+    } catch (error) {
+      console.log('没有userImgage');
+    }
   },
 
   watch: {
@@ -523,7 +528,7 @@ export default {
 </script>
 
 <style scoped>
-.palyList{
+.palyList {
   margin-top: 80px;
 }
 .myMusic-container {

@@ -1,5 +1,5 @@
 <template>
-  <div class="myMusic-container">
+  <div class="playSing myMusic-container">
     <div style="height: auto; border-left: 1px solid #eee;border-right: 1px solid #eee" class="container-content">
       <div class="content-left">
         <div style="height: auto">
@@ -89,13 +89,15 @@
           <div class="simi-content">
             <ul style="list-style: none;padding:0;margin: 0">
               <li v-for="(item, index) in simiPlayList" :key="index">
-                <div class="img">
-                  <img :src="item.coverImgUrl" alt="" style="width: 50px;height: 50px" />
-                </div>
-                <div class="comment">
-                  <p>{{ item.name }}</p>
+                <div class="sug-class" @click="goToPlayList(item.id)">
+                  <div class="img">
+                    <img :src="item.coverImgUrl" alt="" style="width: 50px;height: 50px" />
+                  </div>
+                  <div class="comment">
+                    <p>{{ item.name }}</p>
 
-                  <p>{{ item.creator.nickname }}</p>
+                    <p>{{ item.creator.nickname }}</p>
+                  </div>
                 </div>
               </li>
             </ul>
@@ -147,7 +149,7 @@ export default {
   data () {
     return {
       id: this.$route.params.id,
-      geci: "",
+      geci: [],
       singComment: [],
       total: 0,
       pageSize: 10,
@@ -161,7 +163,8 @@ export default {
       loadIndex: 0,
       textarea: "",
       textarea2: "",
-      commentIndex: 0
+      commentIndex: 0,
+      userImg: ''
     };
   },
   watch: {
@@ -201,10 +204,15 @@ export default {
     }
   },
   mounted () {
-    this.userImg = JSON.parse(sessionStorage.getItem("userImage")).userImage
+    try {
+      this.userImg = JSON.parse(sessionStorage.getItem("userImage")).userImage || ''
+    } catch (error) {
+      console.log(error);
+    }
     this.getComment();
     this.getLrc();
     this.getsimiInfo();
+    console.log("执行了吗");
   },
   methods: {
     getComment () {
@@ -348,6 +356,16 @@ export default {
         commentId: commentId
       };
       this.commentHandle(params);
+    },
+    goToPlayList (sId) {
+      console.log('值了吗' + sId);
+      this.$store.commit("changePlayListId", sId);
+      this.$router.push({
+        name: "playlist",
+        params: {
+          id: sId
+        }
+      });
     }
   },
   // 组件导航钩子
@@ -359,6 +377,9 @@ export default {
 </script>
 
 <style scoped>
+.playSing {
+  margin-top: 80px;
+}
 .myMusic-container {
   padding: 0 200px;
   height: auto;
@@ -406,8 +427,18 @@ export default {
 }
 .caret-right {
   cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 50%;
 }
-
+.caret-right :hover {
+  color: red;
+}
+.sug-class {
+  cursor: pointer;
+}
+.sug-class:hover {
+  text-decoration: underline;
+}
 .content-right {
   height: auto;
   width: 340px;

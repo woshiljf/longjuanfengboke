@@ -42,8 +42,8 @@ const MyTest = {
         changePlayButtonIndex(state, id) {
             state.playButtonIndex = id;
         },
-        changeShowOrHidden(state, b) {
-            state.playbarshowOrHidden = b;
+        changeShowOrHidden(state, f) {
+            state.playbarshowOrHidden = f
         },
         changePlayListId(state, sid) {
             state.playListId = sid;
