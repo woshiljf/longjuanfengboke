@@ -354,6 +354,17 @@ let routes = [{
                     },
                     hidden: true,
                 },
+
+                {
+                    path: "/study/towFind",
+                    name: "tanxin",
+                    component: () =>
+                        import ("@/page/alogthumPage/towFind/index.vue"),
+                    meta: {
+                        keepAlive: true // 不需要缓存
+                    },
+                    hidden: true,
+                },
             ]
         }]
     },
