@@ -23,9 +23,23 @@
           <div class="iconClass">
             <i class="el-icon-caret-right" @click="playNext"></i>
           </div>
+
+          <div class="imgsing iconClass">
+            <el-tooltip class="item" effect="dark" content="歌曲详情" placement="top">
+              <i class="el-icon-s-grid" @click="getSingDetail"></i>
+            </el-tooltip>
+
+          </div>
+          <!-- 
+          <div class="loadingClass imgsing iconClass">
+
+            <i class="el-icon-loading"></i>
+
+          </div> -->
+
         </div>
 
-        <div class="navBar">
+        <div class="navBar ">
           <el-slider id="sildbar" style="color： red" v-model="musicDuration" :max="musicAllDuration"
             :show-tooltip="false" @change="changeMusicDuration" @mousedown.native="isChange = true"
             @mouseup.native="isChange = false">
@@ -73,7 +87,7 @@ export default {
   },
   filters: {
     formatDate: function (time) {
-      if (typeof time !== 'number') return
+      if (Object.is(time) == NaN) return
       var m = parseInt(time / 60)
 
       var s = parseInt(time % 60)
@@ -87,6 +101,7 @@ export default {
     ...mapState({
       playIndex: state => state.myTest.playButtonIndex,
       showOrHidden: state => state.myTest.playbarshowOrHidden,
+      singId: state => state.myTest.singId,
     })
   },
   methods: {
@@ -144,16 +159,24 @@ export default {
       this.isChange = false
     },
 
+    getSingDetail () {
+      // 防止多次点击
+      if (location.hash == '#/playsing') return
 
+      this.$router.push({
+        name: 'singInfo',
+        params: {
+          id: this.singId
+        }
+      })
+    },
     // 播放控制在这里
-
-
     playbarHandle () {
       this.$store.commit('changeShowOrHidden', false)
     },
     // 播放下一首
     playNext () {
-      console.log('执行了吗');
+      // console.log('执行了吗');
       // 获取当前歌单的播放列表
       this.isPlaying = false
 
@@ -219,6 +242,7 @@ export default {
         console.log(e);
       }).finally(e => {
         this.$store.commit('changeNowPlayId', this.params.id)
+        this.$store.commit('commitSingId', this.params.id)
         this.isPlaying = true
       })
     }
@@ -239,12 +263,19 @@ export default {
     display: flex;
     cursor: pointer;
   }
+
+  .loadingClass {
+    position: absolute;
+    top: 0;
+    left: 10px;
+  }
   .navBar {
+    position: relative;
     width: 50%;
-    height: 80px;
-    line-height: 80px;
+    height: 50px;
+    line-height: 50px;
     box-sizing: border-box;
-    padding-top: 18px;
+    padding-top: 5px;
     cursor: pointer;
     margin-right: 10px;
   }

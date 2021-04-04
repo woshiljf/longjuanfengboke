@@ -165,7 +165,11 @@ export default {
     }
   },
   mounted () {
-    this.userImg = JSON.parse(sessionStorage.getItem("userImage")).userImage
+    try {
+      this.userImg = JSON.parse(sessionStorage.getItem("userImage")).userImage
+    } catch (error) {
+      console.log('需要登录');
+    }
     this.total = this.searchOut.songCount;
     this.songsId = this.playListId;
     this.searchEnterData = this.searchOut.keywords;
@@ -256,6 +260,7 @@ export default {
     gotoPlay (singId) {
       // console.log(this.$refs)
       // 调用子组件，去听歌
+      this.$store.commit('commitSingId', singId)
       this.$refs.singBox.gotoPlaySing(singId);
     },
 
@@ -293,7 +298,7 @@ export default {
   color: #1e131d;
   padding-bottom: 80px;
 }
-.searchDash{
+.searchDash {
   margin-top: 50px;
 }
 .coverImgurl {

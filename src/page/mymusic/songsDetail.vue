@@ -4,12 +4,7 @@
       <div>
         <div class="songs-title">
           <div class="imgshow description">
-            <img
-              :src="imgUrl"
-              alt="歌单图片"
-              class="songsImg"
-              style="width:260px;height:260px"
-            />
+            <img :src="imgUrl" alt="歌单图片" class="songsImg" style="width:260px;height:260px" />
           </div>
           <div class="songsDescription description">
             <h2>{{ songsTitle }}</h2>
@@ -26,41 +21,28 @@
       </div>
       <div>
         <div class="songsList">
-          <div><span>歌曲列表</span> <span>播放次数</span></div>
+          <!-- <div><span>歌曲列表</span> <span>播放次数</span></div> -->
           <div class="hr"></div>
           <div>
-            <el-table
-              :data="datalist"
-              stripe
-              style="width: 100%"
-              ref="playList"
-              v-loading="tableloading"
-              highlight-current-row
-              :header-cell-style="{
+            <el-table :data="datalist" stripe style="width: 100%" ref="playList" v-loading="tableloading"
+              highlight-current-row :header-cell-style="{
                 background: '#333',
                 color: 'white',
                 padding: '1px 0',
                 height: '50px'
-              }"
-            >
+              }">
               <el-table-column label="索引" type="index" width="100" :index="indexMethod">
               </el-table-column>
               <el-table-column label="操作" width="200">
                 <template slot-scope="scope">
-                  <el-button
-                    size="mini"
-                    :type="scope.$index === buttonIndex ? 'goon' : 'default'"
-                    @click="handleEdit(scope.$index, scope.row);"
-                    :loading="scope.$index === index"
-                    >播放
+                  <el-button size="mini" :type="scope.$index === buttonIndex ? 'goon' : 'default'"
+                    @click="handleEdit(scope.$index, scope.row);" :loading="scope.$index === index">播放
                   </el-button>
                 </template>
               </el-table-column>
               <el-table-column prop="title" label="歌曲标题" width="250">
                 <template slot-scope="scope">
-                  <router-link
-                    :to="{ name: 'singInfo', params: { id: scope.row.id } }"
-                  >
+                  <router-link :to="{ name: 'singInfo', params: { id: scope.row.id } }">
                     <span class="singName">{{ scope.row.title }}</span>
                   </router-link>
                 </template>
@@ -70,7 +52,15 @@
                   <span>{{ scope.row.time | formatDate(scope.row.time) }}</span>
                 </template>
               </el-table-column>
-              <el-table-column prop="singer" label="歌手"> </el-table-column>
+              <el-table-column prop="singer" label="歌手">
+
+                <template slot-scope="scope">
+                  <!-- <router-link :to="{ name: 'singInfo', params: { id: scope.row.id } }"> -->
+                  <span class="singName" @click="getSingerDetail(scope.row)">{{ scope.row.singer }}</span>
+                  <!-- </router-link> -->
+                </template>
+
+              </el-table-column>
               <el-table-column prop="zj" label="专辑"> </el-table-column>
             </el-table>
           </div>
@@ -85,7 +75,7 @@ import { get } from "../../utils/request";
 import { Select } from "element-ui";
 import { mapState } from "vuex";
 export default {
-  data() {
+  data () {
     return {
       index: "",
       flag: true,
@@ -94,7 +84,7 @@ export default {
   },
 
   filters: {
-    formatDate: function(time) {
+    formatDate: function (time) {
       var t = new Date(time);
       var m = t.getMinutes();
       var s = t.getSeconds();
@@ -107,13 +97,13 @@ export default {
   props: {
     datalist: {
       type: Array,
-      default: function() {
+      default: function () {
         return [];
       }
     },
     id: {
       type: Number,
-      default: function() {
+      default: function () {
         return 0;
       }
     },
@@ -143,10 +133,13 @@ export default {
     }
   },
   methods: {
-    indexMethod(index) {
+    indexMethod (index) {
       return index * 1;
     },
-    handleEdit(index, row) {
+    handleEdit (index, row) {
+
+      this.$store.commit('commitSingId', row.id)
+
       this.index = index;
       var params = {
         id: row.id
@@ -173,7 +166,7 @@ export default {
         .catch(e => {
           console.log(e);
         })
-        .finally(e => {});
+        .finally(e => { });
 
       if (this.flag) {
         var temp = [];
@@ -182,21 +175,31 @@ export default {
         this.flag = false;
       }
     },
-    playHandle() {
+    playHandle () {
       this.$store.commit("SET_PLAYSTATS", true);
     },
-    playSing() {
+    playSing () {
       console.log("合作");
     },
-    checkSingDetail(singId) {
+    checkSingDetail (singId) {
       this.$router.push({
         path: "/playsing",
         query: { id: singId }
       });
+    },
+    getSingerDetail (data) {
+      //  跳转到歌手信息页面
+      this.$store.commit('changeSingerInfo', data.singerDetail)
+      this.$router.push({
+        name: 'singerInfo',
+        params: {
+          data: data.singerDetail
+        }
+      })
     }
   },
   watch: {
-    datalist: function() {
+    datalist: function () {
       this.index = "";
       this.flag = true;
       this.$store.commit("changePlayButtonIndex", "");
@@ -207,7 +210,7 @@ export default {
       buttonIndex: state => state.myTest.playButtonIndex
     })
   },
-  mounted() {}
+  mounted () { }
 };
 </script>
 
@@ -230,6 +233,7 @@ export default {
 }
 .singName:hover {
   text-decoration: underline;
+  cursor: pointer;
 }
 .el-button--goon.is-active,
 .el-button--goon:active {
@@ -251,13 +255,7 @@ export default {
   height: 3px;
   margin-bottom: 5px;
 }
-.songsList{
+.songsList {
   height: 100%vh;
 }
-
-
-
-
-
-
 </style>

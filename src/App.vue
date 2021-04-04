@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   name: "App",
@@ -134,6 +134,7 @@ body {
   width: 100%;
   padding-bottom: 80px;
   transition: 2s all;
+  overflow: auto;
 }
 .el-drawer__body {
   background-color: #333;

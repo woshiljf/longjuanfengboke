@@ -1,20 +1,6 @@
 <template>
-  <div class="dashboard">
+  <div class="playListCatgary dashboard">
     <div class="dash-container">
-      <div class="menu">
-      </div>
-      <div class="lunbotumain">
-        <div class="lunbotu">
-          <el-carousel :interval="5000" arrow="always" class="carousel">
-            <el-carousel-item v-for="item in imgurl" :key="item.imgageUrl">
-              <img :src="item.imageUrl" :alt="item.typeTitle" @click="
-                  gotoHomeSong(item.targetId, item.targetType, item.typeTitle);
-                " />
-            </el-carousel-item>
-          </el-carousel>
-        </div>
-      </div>
-
       <div class="main-content">
         <div>
           <hr />
@@ -41,83 +27,23 @@
   </div>
 </template>
 <script>
-import {
-  getHomePage,
-  gerPersona,
-  getNewAlbum,
-  getTop
-} from "../../api/homepage";
-import { getHomeLubo } from "../../api/getHomeLubotu";
-import { getuserplaylist } from "../../api/userlikesings";
+
 import staticData from "@/textResources/staticData.js"
 export default {
   data () {
     return {
-      userName: "",
-      imgurl: [],
-      singinfo: null,
-      creatives: [],
-      activeName: "0",
-      styleSuggestion: [],
-      personData: staticData,
+
+      personData: [],
       newalbums: [],
     };
   },
   created () {
-    this.isGujiaping = true
-    this.getHomeInfor();
-    this.getHome();
-    this.getPersonList();
-    this.getnewAb();
-    var user = sessionStorage.getItem("userId");
-    if (user) {
-      user = JSON.parse(user);
-      this.userId = user.userId || "";
-    }
-    this.getplaylist(this.userId);
+
+
   },
   methods: {
-    getHomeInfor () {
-      getHomePage()
-        .then(res => {
-          this.singinfo = res.data.data.blocks;
-          this.creatives = res.data.data.blocks[0].creatives;
-          this.styleSuggestion = res.data.data.blocks[2];
-        })
-        .catch(e => { });
-    },
+
     // 获取歌单列表
-    getplaylist (userId) {
-      // console.log('dahaigou');
-
-      var dataPlayList = sessionStorage.getItem("dataList");
-
-      if (Object.keys(dataPlayList).length !== 0) {
-        return;
-      } else {
-        getuserplaylist(userId).then(response => {
-          var data = response.data.playlist;
-          sessionStorage.setItem("dataList", JSON.stringify({ data }));
-        });
-      }
-    },
-    getHome () {
-      getHomeLubo().then(res => {
-        this.imgurl = res.data.banners;
-      });
-    },
-    getPersonList () {
-      gerPersona().then(res => {
-        this.personData = res.data.result.slice(0, 12);
-
-      });
-    },
-    getnewAb () {
-      getNewAlbum(20, 0).then(res => {
-        // this.newalbums = res.data.album.slice(0, 10);
-        this.newalbums = res.data.weekData.slice(0, 10);
-      });
-    },
     goToPlayList (sId) {
       // 解决歌单页面跳转无法请求得问题
       this.$store.commit("changePlayListId", sId);
@@ -125,16 +51,6 @@ export default {
         name: "playlist",
         params: {
           id: sId
-        }
-      });
-    },
-    gotoHomeSong (id, type, title) {
-      this.$router.push({
-        name: "homePlay",
-        query: {
-          targetId: id,
-          targetType: type,
-          typeTitle: title
         }
       });
     },
@@ -157,8 +73,12 @@ ul {
   padding: 0;
   margin: 0;
 }
+
+.playListCatgary {
+  margin-top: 80px;
+}
+
 .dashboard {
-  height: 1200px;
   width: 100%;
   color: #fff;
   min-width: 1420px;

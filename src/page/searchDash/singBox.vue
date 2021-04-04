@@ -93,6 +93,7 @@ export default {
 
   methods: {
     gotoPlaySing (singId) {
+      this.$store.commit('commitSingId', singId)
       this.handleEdit(singId)
       this.$router.push(
         { name: 'singInfo', params: { id: singId } }
@@ -101,10 +102,10 @@ export default {
     },
 
     playSong (singId) {
+      this.$store.commit('commitSingId', singId)
       this.loadIndex = singId
       this.handleEdit(singId)
       this.loadIndex = ''
-
     },
 
 

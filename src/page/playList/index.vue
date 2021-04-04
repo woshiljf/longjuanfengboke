@@ -30,7 +30,8 @@
               </div>
               <div class="con tag">
                 <span>标签</span>
-                <el-button round size="mini" v-for="(item, i) in playListInfo.playListTags" :key="i">{{ item }}
+                <el-button @click="getTagInfo(item)" round size="mini" v-for="(item, i) in playListInfo.playListTags"
+                  :key="i">{{ item }}
                 </el-button>
               </div>
               <div class=" con dec-content">
@@ -62,15 +63,15 @@
             <el-table-column label="听歌">
               <template slot-scope="scope">
                 <el-button size="mini" :type="scope.$index === buttonIndex ? 'goon' : 'default'"
-                  @click="handleEdit(scope.$index, scope.row);" :loading="scope.$index === index">播放
+                  @click="handleEdit(scope.$index, scope.row,scope.row.id);" :loading="scope.$index === index">播放
                 </el-button>
               </template>
             </el-table-column>
             <el-table-column prop="title" label="歌曲标题" width="180">
               <template slot-scope="scope">
-                <router-link :to="{ name: 'singInfo', params: { id: scope.row.id } }">
-                  <span class="singName">{{ scope.row.title }}</span>
-                </router-link>
+                <!-- <router-link :to="{ name: 'singInfo', params: { id: scope.row.id } }"> -->
+                <span class="singName" @click="goToSingInfo(scope.row.id)">{{ scope.row.title }}</span>
+                <!-- </router-link> -->
               </template>
             </el-table-column>
             <el-table-column prop="time" label="时长" width="180">
@@ -78,7 +79,15 @@
                 <span>{{ scope.row.time | formMin(scope.row.time) }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="singer" label="歌手"> </el-table-column>
+            <el-table-column prop="singer" label="歌手">
+
+              <template slot-scope="scope">
+                <!-- <router-link :to="{ name: 'singInfo', params: { id: scope.row.id } }"> -->
+                <span class="singName" @click="getSingerDetail(scope.row)">{{ scope.row.singer }}</span>
+                <!-- </router-link> -->
+              </template>
+
+            </el-table-column>
             <el-table-column prop="zj" label="专辑"> </el-table-column>
           </el-table>
         </div>
@@ -196,8 +205,9 @@
 
 <script>
 import { get } from "@/utils/request";
-import { getSimPlaysings, submitComment } from "@/api/listenSing";
-import { getPlayListDetail, getRelatedPlayList } from "@/api/getSongsSheet";
+import { submitComment } from "@/api/listenSing";
+import { getRelatedPlayList } from "@/api/getSongsSheet";
+import { getPlayListCatgary } from "@/api/getSingerDetail";
 import { mapState } from "vuex";
 
 export default {
@@ -320,6 +330,19 @@ export default {
         this.total = res.data.total;
       });
     },
+
+    // 调整到歌取详情，歌词页面
+    goToSingInfo (id) {
+      // this.$store.commit('commitSingId', id)
+      this.$router.push({
+        name: 'singInfo',
+        params: {
+          id: id
+        }
+      })
+
+
+    },
     getPlaylist () {
       var params = {
         id: this.playListId
@@ -354,6 +377,7 @@ export default {
       this.show(dataSongs);
     },
     show (data) {
+      // console.log("歌曲信息", data);
       var dataList = [];
       for (let i = 0; i < data.length; i++) {
         var obj = {};
@@ -362,6 +386,7 @@ export default {
         obj.zj = data[i].al.name;
         obj.time = data[i].dt;
         obj.id = data[i].id;
+        obj.singerDetail = data[i].ar
         dataList.push(obj);
       }
 
@@ -465,8 +490,10 @@ export default {
     },
 
     // 播放歌曲的操作
-    handleEdit (index, row) {
+    handleEdit (index, row, id) {
+
       this.songid = row.id;
+      this.$store.commit('commitSingId', id)
       this.index = index;
       var params = {
         id: row.id
@@ -507,6 +534,55 @@ export default {
     },
     playHandle () {
       this.$store.commit("SET_PLAYSTATS", true);
+    },
+    getSingerDetail (data) {
+
+      //  跳转到歌手信息页面
+      this.$store.commit('changeSingerInfo', data.singerDetail)
+      this.$router.push({
+
+        name: 'singerInfo',
+        params: {
+          data: data.singerDetail
+        }
+      })
+    },
+    getTagInfo (tag) {
+      getPlayListCatgary(50, tag, 50)
+        .then(response => {
+
+          var responseData = response.data.playlists
+          var data = []
+          // 对数据过滤一下，选取有用的就行
+          for (let i = 0; i < responseData.length; i++) {
+
+            var obj = {}
+            var temp = responseData[i]
+            obj['coverImgUrl'] = temp['coverImgUrl']
+            obj['id'] = temp['id']
+            obj['name'] = temp['name']
+            obj['description'] = temp['description']
+            obj['userId'] = temp['userId']
+            obj['creator'] = temp['creator'].nickname
+            data.push(obj)
+          }
+          // 跳转到分类歌单
+          this.$store.commit('changePlayListCatgory', data)
+          this.$router.push({
+            name: 'playListCatgory',
+          })
+        })
+        .catch(e => {
+          console.log(e);
+        })
+        .finally(e => {
+
+          console.log(e);
+        });
+
+
+
+
     }
   },
   // 组件导航钩子
@@ -588,6 +664,7 @@ export default {
   border-right: 1px solid #ccc;
 }
 .singName:hover {
+  cursor: pointer;
   text-decoration: underline;
 }
 

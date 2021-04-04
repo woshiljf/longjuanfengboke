@@ -1,40 +1,37 @@
 <template>
-  <div class="myHomeDash myMusic-container">
+  <div class="singerDetail myMusic-container">
     <div style="height: auto; border-left: 1px solid #eee;border-right: 1px solid #eee;" class="container-content">
       <div class="content-left">
         <div style="height: auto">
           <div class="playListTitle">
             <div class="imagcover">
-              <img :src="myProfile.profile.avatarUrl" alt="" style="width: 270px;heigth: 260px" />
+              <img :src="singerInfo.img1v1Url || singerInfo.picUrl" alt="" style="width: 270px;heigth: 260px" />
             </div>
             <div class="description">
               <div class="con play-title">
-                <span class="nametitle">{{ myProfile.profile.nickname }}</span>
+                <span class="nametitle">{{ singerInfo.name }}</span>
               </div>
 
               <div class="con creator">
-                <span>创建时间</span>
-                <span>{{
-                    myProfile.createTime | formatDate(myProfile.createTime)
-                  }}创建</span>
+                <span>发布时间</span>
+                <span>{{singerInfo.publishTime | formatDate(singerInfo.publishTime)}}</span>
               </div>
 
               <div class="con button">
-                <el-button type="danger">动态：{{ myProfile.profile.eventCount }}</el-button>
-                <el-button type="danger">关注：{{ myProfile.profile.follows }}</el-button>
-                <el-button type="danger">粉丝：{{ myProfile.profile.followeds }}</el-button>
+                <el-button type="danger">动态：</el-button>
+                <el-button type="danger">关注：</el-button>
+                <el-button type="danger">粉丝：</el-button>
               </div>
               <div class="con tag">
                 <span>个人介绍</span>
-                <el-button round size="mini" v-for="(item, i) in playListInfo.playListTags" :key="i">{{ item }}
-                </el-button>
               </div>
               <div class=" con dec-content">
-                <p>{{ myProfile.profile.signature }}</p>
+                <p>{{ singerInfo.briefDesc}}</p>
               </div>
             </div>
           </div>
         </div>
+        <div>热门50首</div>
         <div class="table-title" style="width: 100%;   display: flex;
              justify-content: space-between;margin-top: 20px"></div>
         <div class="playListTable">
@@ -50,7 +47,7 @@
             <el-table-column label="听歌">
               <template slot-scope="scope">
                 <el-button size="mini" :type="scope.$index === buttonIndex ? 'goon' : 'default'"
-                  @click="handleEdit(scope.$index, scope.row);" :loading="scope.$index === index">播放
+                  @click="handleEdit(scope.$index, scope.row,scope.row.id);" :loading="scope.$index === index">播放
                 </el-button>
               </template>
             </el-table-column>
@@ -70,42 +67,6 @@
             <el-table-column prop="zj" label="专辑"> </el-table-column>
           </el-table>
         </div>
-
-        <div>
-          <div style="margin-top: 20px">
-            <span class="comment-title" style="font-size: 25px">评论</span>
-            <span class="comment-title" style="color:">共 <span style="color: red">{{ total }}</span> 条评论</span>
-            <div class="hr"></div>
-          </div>
-          <!-- <button @click="testClick">点我一下</button> -->
-
-          <div class="commentBox">
-            <div class="writeComment">
-              <el-card class="box-card">
-                <div class="commentText">
-                  <div class="img">
-                    <img :src="userImg" alt="" style="width: 50px;height: 50px" />
-                  </div>
-                  <div class="my-comment">
-                    <el-input type="textarea" :rows="2" placeholder="评论" v-model="textarea" style="width: 100%">
-                    </el-input>
-                    <div class="commentclick">
-                      <el-button type="primary" size="mini" @click="submitMyComment">评论</el-button>
-                    </div>
-                  </div>
-                </div>
-              </el-card>
-            </div>
-            <el-card class="box-card">
-              <div class="pagination">
-                <el-pagination background layout="total, sizes, prev, pager, next, jumper" :total="total"
-                  :page-sizes="[10, 20, 30, 40, 50]" @size-change="sizeChange" @next-click="nextClick"
-                  @current-change="currentChange">
-                </el-pagination>
-              </div>
-            </el-card>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -113,15 +74,12 @@
 
 <script>
 import { get } from "@/utils/request";
-import { getSimPlaysings, submitComment } from "@/api/listenSing";
-import { getUserInfo } from "@/api/userlikesings";
 import { mapState } from "vuex";
 
 export default {
   name: "singInfo",
   data () {
     return {
-      id: this.$route.params.id,
       index: "",
       flag: true,
       showColor: 0,
@@ -135,34 +93,24 @@ export default {
       simiPlayList: [],
       simiPlaysongs: [],
       loadIndex: 0,
-      textarea: "",
-      textarea2: "",
-      commentIndex: 0,
       dataSongs: [],
       creatorInfo: {
         cAvatarUrl: "",
         cNickName: ""
       },
-      // 歌单信息
-      playListInfo: {
-        trackCount: 0, //歌单曲目数量
-        playCount: 0, // 播放次数
-        createTime: 0, // 创建时间
-        playListTags: [], // 歌单标签
-        description: "", // 歌单描述
-        coverImgUrl: "", //歌单图片
-        nameTitle: "" // 歌单名字标题
-      },
+      // 歌单信息,
+      songid: 0,
+      showColor: 1,
       songsId: 0,
-
-      myProfile: null
+      singerInfo: null,
     };
   },
   computed: {
     ...mapState({
       userImg: state => state.user.userAvatarUrl,
       buttonIndex: state => state.myTest.playButtonIndex,
-      playListId: state => state.myTest.playListId
+      playListId: state => state.myTest.playListId,
+      singerDetail: state => state.myTest.singerDetail
     })
   },
   filters: {
@@ -199,11 +147,9 @@ export default {
   },
   created () { },
   mounted () {
-    this.songsId = this.playListId;
-    // this.getComment();
-    // this.getPlaylist();
-    // this.getRelatedList();
-    this.getUserData();
+
+    // this.songsId = this.singerDetail[0].id;
+    this.getSingerData();
   },
 
   watch: {
@@ -220,55 +166,32 @@ export default {
     indexMethod (index) {
       return index * 1 + 1;
     },
-    getComment () {
-      var params = {
-        id: this.playListId,
-        limit: this.pageSize,
-        offset: this.offset
-      };
-      this.comentLoading = true;
-      get("api/comment/playlist", params).then(res => {
-        // console.log('下一页开始', res);
-        this.comentLoading = false;
-        this.singComment = [];
-        this.singComment = res.data.comments;
-        this.total = res.data.total;
-      });
-    },
-    getPlaylist () {
-      var params = {
-        id: this.playListId
-      };
-      get("api/playlist/detail", params)
-        .then(response => {
-          // console.log("歌单", response);
+    getSingerData () {
+      var singerId = this.singerDetail[0].id
 
-          this.handlePlayListInfo(response.data);
+      //   获取歌手信息
+      get("api/artists", { id: singerId })
+        .then(res => {
+          // 保存歌手信息
+          this.singerInfo = res.data.artist
+          this.handlePlayListInfo(res.data.hotSongs)
+
         })
         .catch(e => {
           console.log(e);
         })
         .finally(e => { });
+
+
     },
+
     handlePlayListInfo (songList) {
-      var dataSongs = songList.playlist.tracks;
-      var songsLength = songList.playlist.tracks.length;
-      this.creatorInfo = {
-        cNickName: songList.playlist.creator.nickname,
-        cAvatarUrl: songList.playlist.creator.avatarUrl
-      };
-      this.playListInfo = {
-        trackCount: songsLength, //歌单曲目数量
-        playCount: songList.playlist.playCount, // 播放次数
-        createTime: songList.playlist.createTime, // 创建时间
-        playListTags: songList.playlist.tags, // 歌单标签
-        description: songList.playlist.description, // 歌单描述
-        coverImgUrl: songList.playlist.coverImgUrl, //歌单图片
-        nameTitle: songList.playlist.name // 歌单名字标题
-      };
+
+      var dataSongs = songList
       this.show(dataSongs);
     },
     show (data) {
+      // console.log("歌曲信息", data);
       var dataList = [];
       for (let i = 0; i < data.length; i++) {
         var obj = {};
@@ -277,6 +200,7 @@ export default {
         obj.zj = data[i].al.name;
         obj.time = data[i].dt;
         obj.id = data[i].id;
+        obj.singerDetail = data[i].ar
         dataList.push(obj);
       }
 
@@ -284,105 +208,11 @@ export default {
       // console.log("处理的数据", this.dataSongs);
     },
 
-    getUserData () {
-      // /user/detail
-      var myId = sessionStorage.getItem("userId");
-      var params = {
-        uid: JSON.parse(myId).userId
-      };
-      get("api/user/detail", params).then(res => {
-        console.log("我的信息", res);
-        this.myProfile = res.data;
-      });
-    },
+    // 播放歌曲
+    handleEdit (index, row, id) {
 
-    sizeChange (data) {
-      this.pageSize = data;
-      this.getComment();
-    },
-    nextClick (p) {
-      this.offset = p;
-      // 下一页
-      this.flag = false;
-      this.getComment();
-    },
-    currentChange (p) {
-      if (this.flag) {
-        this.offset = p;
-        this.getComment();
-      }
-      this.flag = true;
-    },
-    // 获取包含正在播放歌曲的歌单
-    getRelatedList () {
-      var params = this.playListId;
-      Promise.all([getRelatedPlayList(params)]).then(res => {
-        this.simiPlayList = res[0].data.playlists;
-      });
-    },
-    playSong (songid) {
-      this.$store.commit("changePlayListId", songid);
-      this.id = songid;
-      this.getComment();
-      this.getPlaylist();
-      this.getRelatedList();
-    },
-    commentHandle (params) {
-      if (params.content == "") {
-        this.$message({
-          type: "warning",
-          message: "输入点内容吧"
-        });
-        return;
-      }
-
-      submitComment(params)
-        .then(res => {
-          if (res.data.code == 200) {
-            this.$message({
-              type: "success",
-              message: "评论成功"
-            });
-            this.textarea = "";
-            this.textarea2 = "";
-            this.commentIndex = 0;
-          }
-        })
-        .catch(err => {
-          console.log("评论失败", err);
-          this.$message({
-            type: "warning",
-            message: "暂时不能评论"
-          });
-
-          this.textarea = "";
-          this.textarea2 = "";
-          this.commentIndex = 0;
-        });
-    },
-    anwserHandle (commentId) {
-      this.commentIndex = commentId;
-    },
-    submitMyComment () {
-      var params = {
-        id: this.id,
-        content: this.textarea
-      };
-      this.commentHandle(params);
-    },
-    answerMyComment (commentId) {
-      var params = {
-        t: 2,
-        id: this.id,
-        content: this.textarea2,
-        commentId: commentId
-      };
-      this.commentHandle(params);
-    },
-
-    // 播放歌曲的操作
-    handleEdit (index, row) {
       this.songid = row.id;
+      this.$store.commit('commitSingId', id)
       this.index = index;
       var params = {
         id: row.id
@@ -421,12 +251,20 @@ export default {
       // 获取相似歌曲的歌单链表
       // this.getsimiList();
     },
-    playHandle () {
-      this.$store.commit("SET_PLAYSTATS", true);
-    }
+
+    // 获取包含正在播放歌曲的歌单
+    getRelatedList () {
+      var params = this.playListId;
+      Promise.all([getRelatedPlayList(params)]).then(res => {
+        this.simiPlayList = res[0].data.playlists;
+      });
+    },
+
   },
   // 组件导航钩子
   beforeRouteEnter (to, from, next) {
+    // 重新请求
+
     next(vm => {
       var preplayListId = vm.$store.state.myTest.prePlayListId;
       var curPlayListId = vm.$store.state.myTest.playListId;
@@ -444,7 +282,7 @@ export default {
 </script>
 
 <style scoped>
-.myHomeDash {
+.singerDetail {
   margin-top: 60px;
 }
 .myMusic-container {

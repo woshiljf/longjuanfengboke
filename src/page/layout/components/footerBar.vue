@@ -56,17 +56,17 @@ export default {
 }
 .playBar {
   width: 100%;
-  height: 80px;
+  height: 50px;
   background-color: #333;
   position: fixed;
   bottom: 0;
   padding: 0;
-  line-height: 80px;
+  line-height: 50px;
   text-align: center;
   /* display: flex;
   justify-content: center;
   align-items: center; */
-  transition: all 5s;
+  /* transition: all 5s; */
   padding: 0 200px;
 }
 .btnPlay {

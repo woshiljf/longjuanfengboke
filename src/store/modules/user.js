@@ -1,4 +1,4 @@
-import { logout, loginByUsername } from "@/api/login";
+import { logout, loginByUsername, loginByEmailname, LoginCheckQrState } from "@/api/login";
 // import { changePassword } from '@/api/user'
 import { getToken, setToken, removeToken } from "@/utils/auth";
 
@@ -66,11 +66,48 @@ const user = {
     },
 
     actions: {
-        // 用户名登录
+        // 用户名和密码登录 LoginCheckQrState
         LoginByUsername({ commit }, userInfo) {
             const username = userInfo.userCode.trim();
             return new Promise((resolve, reject) => {
                 loginByUsername(username, userInfo.password)
+                    .then(response => {
+                        if (response.data.msg) {
+                            resolve(response);
+                        }
+                        if (response.data.token) {
+                            // console.log('用户信息', response);
+                            var loginName = response.data.profile.nickname;
+                            var userId = response.data.account.id;
+
+                            var userImage = response.data.profile.avatarUrl;
+                            sessionStorage.setItem("user", JSON.stringify({ loginName }));
+
+                            sessionStorage.setItem("userId", JSON.stringify({ userId }));
+                            sessionStorage.setItem(
+                                "userImage",
+                                JSON.stringify({ userImage })
+                            );
+
+                            commit("SET_USERAvatarUrl", response.data.profile.avatarUrl);
+                            commit("SET_USERID", response.data.profile.userId);
+                            commit("SET_TOKEN", response.data.token);
+                            setToken(response.data.token);
+
+                            // console.log(response, 'cccccc.store.modules.user.settoken')
+                            resolve();
+                        }
+                    })
+                    .catch(error => {
+                        reject(error);
+                    });
+            });
+        },
+        // 邮箱和密码登录
+        LoginByEmailname({ commit }, userInfo) {
+            const username = userInfo.userCode.trim();
+            return new Promise((resolve, reject) => {
+                loginByEmailname(username, userInfo.password)
                     .then(response => {
                         if (response.data.msg) {
                             resolve(response);
@@ -103,6 +140,62 @@ const user = {
                     });
             });
         },
+
+        LoginCheckQrState({ commit }, key) {
+            return new Promise((resolve, reject) => {
+                // 重新检查扫码信息
+                LoginCheckQrState(key)
+                    .then(response => {
+
+                        console.log(response);
+                        if (response.data.code == 803) {
+
+                            if (response.data.cookie) {
+                                // console.log('用户信息', response);
+                                commit("SET_TOKEN", response.data.cookie);
+                                setToken(response.data.cookie);
+                                // console.log(response, 'cccccc.store.modules.user.settoken')
+                                resolve({
+                                    msg: '登录成功',
+                                    code: 803
+                                });
+                            }
+                        }
+
+                        if (response.data.code == 800) {
+                            resolve({
+                                msg: '二维码过期',
+                                code: 800
+                            })
+                        }
+                        if (response.data.code == 801) {
+
+                            resolve({
+                                msg: '等待扫码',
+                                code: 801
+                            })
+                        }
+                        if (response.data.code == '802') {
+                            resolve({
+                                msg: '等待确认',
+                                code: 802,
+
+                            })
+                        }
+
+
+                    })
+                    .catch(error => {
+                        reject(error);
+                    });
+
+
+            });
+        },
+
+
+
+
         // 修改密码
         ChangePassword({ commit }, userInfo) {
             return new Promise((resolve, reject) => {

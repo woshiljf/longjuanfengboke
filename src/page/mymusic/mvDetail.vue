@@ -1,5 +1,5 @@
 <template>
-  <div class="myMusic-container">
+  <div class="myMvDetail myMusic-container">
     <div style="height: auto; border-left: 1px solid #eee;border-right: 1px solid #eee" class="container-content">
       <div class="content-left">
         <div style="height: auto">
@@ -344,6 +344,9 @@ export default {
 </script>
 
 <style scoped>
+.myMvDetail {
+  margin-top: 80px;
+}
 .myMusic-container {
   padding: 0 200px;
   height: auto;

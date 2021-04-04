@@ -261,6 +261,48 @@ let routes = [{
         }]
     },
 
+    {
+        path: "singerDetail",
+        component: home,
+        single: true,
+        name: "歌手详情",
+        meta: {
+            keepAlive: true // 不需要缓存
+        },
+        iconCls: "el-icon-s-home", //图标样式class
+        children: [{
+            path: "/singerInfo",
+            name: "singerInfo",
+            component: () =>
+                import ("@/page/singerDetail/index.vue"),
+            meta: {
+                keepAlive: true // 不需要缓存
+            },
+            hidden: true
+        }]
+    },
+
+    {
+        path: "likeplayList",
+        component: home,
+        single: true,
+        name: "分类歌单",
+        meta: {
+            keepAlive: true // 不需要缓存
+        },
+        iconCls: "el-icon-s-home", //图标样式class
+        children: [{
+            path: "/playListCatgory",
+            name: "playListCatgory",
+            component: () =>
+                import ("@/page/playListCatgory/index.vue"),
+            meta: {
+                keepAlive: true // 不需要缓存
+            },
+            hidden: true
+        }]
+    },
+
     // 搜索面板
 
     {

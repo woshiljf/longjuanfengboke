@@ -13,10 +13,10 @@
           <el-menu-item index="3" @click="frendsHandle" v-show="navFlag">朋友</el-menu-item>
           <el-menu-item index="4" @click="shopHandle"> 前端学习记录 </el-menu-item>
           <el-menu-item index="6" @click="happyTime">快乐一下</el-menu-item>
-          <el-menu-item index="7" @click="aboutMe" v-show="!navFlag">关于我</el-menu-item>
+          <!-- <el-menu-item index="7" @click="aboutMe" v-show="!navFlag">关于我</el-menu-item> -->
+          <el-menu-item index="8" @click="myGithub">我的github</el-menu-item>
         </el-menu>
       </div>
-
 
       <div class="searchInput">
         <div class="search">
@@ -24,7 +24,6 @@
             @keyup.enter="handlekey()" />
         </div>
       </div>
-
 
       <div class="userinfo">
         <img :src="userImg" alt="" class="imgamure" />
@@ -77,19 +76,19 @@ export default {
       this.getSearchContent(newText);
     }
   },
-  created(){
+  created () {
   },
   mounted () {
 
     var user = sessionStorage.getItem("user");
     var isStranger = sessionStorage.getItem("stranger")
     this.isStranger = JSON.parse(isStranger).iSstranger
-    if(this.isStranger){
-        var f = sessionStorage.getItem("navFlag");
-        this.navFlag = f.navFlag
-    }else{
-         console.log("执行了吗",this.stronger);
-         this.userImg = JSON.parse(sessionStorage.getItem("userImage")).userImage
+    if (this.isStranger) {
+      var f = sessionStorage.getItem("navFlag");
+      this.navFlag = f.navFlag
+    } else {
+      console.log("执行了吗", this.stronger);
+      this.userImg = JSON.parse(sessionStorage.getItem("userImage")).userImage
     }
     if (user) {
       user = JSON.parse(user);
@@ -112,8 +111,11 @@ export default {
         })
         .catch(() => { });
     },
-    aboutMe(){
-       console.log("关于我");
+    myGithub () {
+      location.href = 'https://github.com/woshiljf'
+    },
+    aboutMe () {
+      console.log("关于我");
     },
     myMusicHandle () {
 
@@ -179,19 +181,19 @@ export default {
 
           this.$router.push({ path: "/searchDash" });
           var obj = {
-           isShow: false
-      };
-      this.$store.commit("changeSearchInfo", obj);
+            isShow: false
+          };
+          this.$store.commit("changeSearchInfo", obj);
         })
         .catch(err => {
           console.log(err);
         })
         .finally(e => {
-        var obj = {
- 
-        isShow: false
-      };
-      this.$store.commit("changeSearchInfo", obj);
+          var obj = {
+
+            isShow: false
+          };
+          this.$store.commit("changeSearchInfo", obj);
           this.$router.push({ path: "/searchDash" });
         });
     },
@@ -282,7 +284,7 @@ export default {
 }
 .search {
   position: absolute;
-  left: 820px;
+  right: 10%;
   z-index: 10;
 }
 .search-box {

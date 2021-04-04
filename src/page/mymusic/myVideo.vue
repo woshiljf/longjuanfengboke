@@ -1,5 +1,5 @@
 <template>
-  <div class="songs-container">
+  <div class="myVideo songs-container">
     <div>
       <div>
         <div class="songsList">
@@ -15,9 +15,7 @@
                     <img :src="item.coverUrl" alt="" style="height: 120px" />
                     <div style="display:inline-block">
                       <h3 class="title">
-                        <router-link
-                          :to="{ name: 'collectMv', params: { id: item.vid } }"
-                        >
+                        <router-link :to="{ name: 'collectMv', params: { id: item.vid } }">
                           {{ item.title }}
                         </router-link>
                       </h3>
@@ -41,7 +39,7 @@
 <script>
 import { nowListenMusic } from "../../api/listenSing";
 export default {
-  data() {
+  data () {
     return {
       singersSize: 50
     };
@@ -49,13 +47,13 @@ export default {
   props: {
     collectvedio: {
       type: Array,
-      default: function() {
+      default: function () {
         return [];
       }
     },
     id: {
       type: Number,
-      default: function() {
+      default: function () {
         return 0;
       }
     },
@@ -85,10 +83,10 @@ export default {
     }
   },
   methods: {
-    indexMethod(index) {
+    indexMethod (index) {
       return index * 1;
     },
-    handleEdit(index, row) {
+    handleEdit (index, row) {
       this.index = index;
       nowListenMusic(row.id)
         .then(response => {
@@ -99,7 +97,7 @@ export default {
         });
     }
   },
-  mounted() {}
+  mounted () { }
 };
 </script>
 

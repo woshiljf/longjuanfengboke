@@ -87,9 +87,10 @@ export default {
       this.isShow = this.SearchData.isShow
     }
   },
-  
+
   methods: {
     gotoPlaySing (singId) {
+      this.$store.commit('commitSingId', singId)
       this.handleEdit(singId)
       this.$router.push(
         { name: 'singInfo', params: { id: singId } }

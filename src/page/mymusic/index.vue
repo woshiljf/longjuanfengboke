@@ -1,62 +1,37 @@
 <template>
   <div class="myLikeandCollect myMusic-container">
     <el-container style="height: 100vh; border-right: 1px solid #eee">
-      <el-aside
-        width="300px"
-        height="100vh"
-        style="background-color: #1e131d;"
-        class="menu-side3"
-      >
+      <el-aside width="300px" height="100vh" style="background-color: #1e131d;" class="menu-side3">
         <el-menu :default-openeds="['2']">
-          <el-menu-item index="1-3" @click="getCollectSinger"
-            >我的歌手</el-menu-item
-          >
+          <el-menu-item index="1-3" @click="getCollectSinger">我的歌手</el-menu-item>
           <el-menu-item index="1-4" @click="getVedio">我的视频</el-menu-item>
           <el-menu-item index="1-5">我的电台</el-menu-item>
 
           <el-submenu index="2">
-            <template slot="title"
-              >创建的歌单</template
-            >
+            <template slot="title">创建的歌单</template>
 
-            <el-menu-item
-              :index="item.name"
-              v-for="item in buildPlayList"
-              :key="item.id"
-              class="songs-menue"
-              @click="
+            <el-menu-item :index="item.name" v-for="item in buildPlayList" :key="item.id" class="songs-menue" @click="
                 getSongs(
                   item.id,
                   item.coverImgUrl,
                   item.description,
                   item.name
                 );
-              "
-              style="padding-left: 20px"
-            >
+              " style="padding-left: 20px">
               <img :src="item.coverImgUrl" alt="" class="coverImgurl" />
               <span> {{ item.name }}({{ item.trackCount }})</span>
             </el-menu-item>
           </el-submenu>
           <el-submenu index="3">
-            <template slot="title"
-              >收藏的音乐</template
-            >
-            <el-menu-item
-              :index="item.name"
-              v-for="item in collectPlayList"
-              :key="item.id"
-              class="songs-menue"
-              @click="
+            <template slot="title">收藏的音乐</template>
+            <el-menu-item :index="item.name" v-for="item in collectPlayList" :key="item.id" class="songs-menue" @click="
                 getSongs(
                   item.id,
                   item.coverImgUrl,
                   item.description,
                   item.name
                 );
-              "
-              style="padding-left: 20px"
-            >
+              " style="padding-left: 20px">
               <img :src="item.coverImgUrl" alt="" class="coverImgurl" />
               {{ item.name }}
             </el-menu-item>
@@ -68,28 +43,12 @@
         <el-main>
           <!-- <button @click="testClick">点我一下</button> -->
           <keep-alive>
-            <songs-detail
-              :datalist="dataSongs"
-              :id="sonsId"
-              :img-url="coverImg"
-              :songs-description="songsDescription"
-              :songs-title="songsname"
-              :tableloading="loading"
-              v-if="status.songs"
-              class="songs-detail"
-            >
+            <songs-detail :datalist="dataSongs" :id="sonsId" :img-url="coverImg" :songs-description="songsDescription"
+              :songs-title="songsname" :tableloading="loading" v-if="status.songs" class="songs-detail">
             </songs-detail>
-            <collect-singers
-              :collectsingers="mycollectsingers"
-              v-if="status.singers"
-              :tableloading="loading"
-            >
+            <collect-singers :collectsingers="mycollectsingers" v-if="status.singers" :tableloading="loading">
             </collect-singers>
-            <my-vedio
-              :collectvedio="likeVedio"
-              :tableloading="loading"
-              v-if="status.mv"
-            ></my-vedio>
+            <my-vedio :collectvedio="likeVedio" :tableloading="loading" v-if="status.mv"></my-vedio>
           </keep-alive>
         </el-main>
       </el-container>
@@ -116,7 +75,7 @@ export default {
     CollectSingers,
     MyVedio
   },
-  data() {
+  data () {
     return {
       buildPlayList: null,
       collectPlayList: null,
@@ -135,7 +94,7 @@ export default {
       }
     };
   },
-  created() {
+  created () {
     var user = sessionStorage.getItem("userId");
     if (user) {
       user = JSON.parse(user);
@@ -143,7 +102,7 @@ export default {
     }
     this.getplaylist(this.userId);
   },
-  mounted() {
+  mounted () {
     // 首次加载，打开喜欢的音乐
     var userLike = this.buildPlayList[0];
     this.getSongs(
@@ -154,7 +113,7 @@ export default {
     );
   },
   methods: {
-    getplaylist(userId) {
+    getplaylist (userId) {
       // console.log('dahaigou');
       var dataPlayList = sessionStorage.getItem("dataList");
 
@@ -173,7 +132,7 @@ export default {
         });
       }
     },
-    getSongs(id, img, description, name) {
+    getSongs (id, img, description, name) {
       for (const key in this.status) {
         if (this.status.hasOwnProperty(key)) {
           this.status[key] = false;
@@ -200,7 +159,7 @@ export default {
           // this.loading.close();
         });
     },
-    show(data) {
+    show (data) {
       var dataList = [];
       for (let i = 0; i < data.length; i++) {
         var obj = {};
@@ -209,12 +168,13 @@ export default {
         obj.zj = data[i].al.name;
         obj.time = data[i].dt;
         obj.id = data[i].id;
+        obj.singerDetail = data[i].ar
         dataList.push(obj);
       }
 
       this.dataSongs = dataList;
     },
-    getCollectSinger() {
+    getCollectSinger () {
       for (const key in this.status) {
         if (this.status.hasOwnProperty(key)) {
           this.status[key] = false;
@@ -233,7 +193,7 @@ export default {
           this.loading = false;
         });
     },
-    getVedio() {
+    getVedio () {
       for (const key in this.status) {
         if (this.status.hasOwnProperty(key)) {
           this.status[key] = false;
@@ -252,11 +212,11 @@ export default {
           this.loading = false;
         });
     },
-    testClick() {
+    testClick () {
       var id = 5436712;
-      getMvUrl(id).then(res => {});
+      getMvUrl(id).then(res => { });
     },
-    openLoading() {
+    openLoading () {
       return Loading.service({
         text: "正在加载",
         target: document.querySelector(".songs-detail")
@@ -267,8 +227,7 @@ export default {
 </script>
 
 <style scope>
-
-.myLikeandCollect{
+.myLikeandCollect {
   margin-top: 80px;
 }
 .myMusic-container {
@@ -288,7 +247,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.contentLike{
+.contentLike {
   margin-left: 2px;
 }
 </style>

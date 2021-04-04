@@ -33,9 +33,11 @@
     </div>
 
     <div class="bounceToDown loginBox">
+
       <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-position="left" label-width="0px"
-        class="demo-ruleForm login-container">
-        <el-form-item prop="account">
+        class="demo-ruleForm login-container" v-if="isUserOrQr">
+        <!-- 手机登入 -->
+        <el-form-item prop="account" v-if="isPhone">
           <!-- el-icon-user-solid -->
           <label for="phone">
             <span style="color: #ffffff">手机号:</span>
@@ -45,8 +47,8 @@
             </span>
           </label>
         </el-form-item>
-        <el-form-item prop="checkPass">
-
+        <!-- 手机密码 -->
+        <el-form-item prop="checkPass" v-if="isPhone">
           <label for="pwd">
             <span style="color: #ffffff">密码：</span>
             <el-input :type="passwordType" v-model="ruleForm2.checkPass" autocomplete="on" placeholder="请输入密码"
@@ -55,7 +57,30 @@
               <i :class="passwordType === 'password' ? 'el-icon-view' : 'el-icon-view'" />
             </span>
           </label>
+        </el-form-item>
+        <!-- 邮箱登入 -->
 
+        <el-form-item prop="account" v-if="isEmail">
+          <!-- el-icon-user-solid -->
+          <label for="phone">
+            <span style="color: #ffffff">网易邮箱:</span>
+            <el-input type="text" v-model="ruleForm2.account" placeholder="请输入邮箱号" autocomplete="on" id="phone" />
+            <span class="show-pwd">
+              <i class="el-icon-user-solid" />
+            </span>
+          </label>
+        </el-form-item>
+
+        <!-- 邮箱密码 -->
+        <el-form-item prop="checkPass" v-if="isEmail">
+          <label for="pwd">
+            <span style="color: #ffffff">密码：</span>
+            <el-input :type="passwordType" v-model="ruleForm2.checkPass" autocomplete="on" placeholder="请输入密码"
+              @keyup.enter.native="login" id="pwd" />
+            <span class="show-pwd" @click="showPwd">
+              <i :class="passwordType === 'password' ? 'el-icon-view' : 'el-icon-view'" />
+            </span>
+          </label>
         </el-form-item>
         <el-checkbox click="remberuser" v-model="checked" checked class="remember">记住密码</el-checkbox>
         <el-form-item style="width:100%;">
@@ -63,10 +88,27 @@
         </el-form-item>
 
         <div class="register" style="width: 100%">
-          <el-button type="danger" size="mini" :loading="dirloginLoad" @click="directLogin">直接拜访</el-button>
+
+          <el-tooltip class="item" effect="dark" content="网易云音乐手机账号" placement="top">
+            <el-button type="danger" size="mini" :loading="dirloginLoad1" @click="phoneHandle">手机登录</el-button>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="网易云邮箱登录" placement="top">
+            <el-button type="danger" size="mini" :loading="dirloginLoad2" @click="emailHandle">邮箱登录</el-button>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="网易云音乐app扫码登录" placement="top">
+            <el-button type="danger" size="mini" :loading="dirloginLoad3" @click="qrHandle">扫码登录</el-button>
+          </el-tooltip>
+
+          <el-button type="danger" size="mini" :loading="dirloginLoad4" @click="directLogin">不想登录</el-button>
         </div>
 
       </el-form>
+
+      <div class="login-container" v-if="!isUserOrQr">
+
+        <img class="qrClass" :src="erWeiMaSrc" alt="二维码图片">
+
+      </div>
 
     </div>
 
@@ -74,17 +116,18 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
-import * as commonApi from "api/common";
-import * as types from "../../store/mutation-types"
 import { getToken } from '@/utils/auth'
-import { Message } from 'element-ui'
+import { get } from "@/utils/request";
+import { geterWeiMaKey, getErWeiMaImg } from '@/api/login'
 export default {
   props: {},
   data () {
     return {
       logining: false,
-      dirloginLoad: false,
+      dirloginLoad1: false,
+      dirloginLoad2: false,
+      dirloginLoad3: false,
+      dirloginLoad4: false,
       ruleForm2: {
         account: "",
         checkPass: ""
@@ -106,7 +149,14 @@ export default {
           }
         ]
       },
-      checked: true
+      checked: true,
+      isPhone: true,
+      isEmail: false,
+      // 默认是手机号码登入
+      loginMethod: 'LoginByUsername',
+      erWeiMaSrc: '',
+      isUserOrQr: true,
+      unikey: ''
     };
   },
   created () {
@@ -130,49 +180,7 @@ export default {
             userCode: this.ruleForm2.account,
             password: this.ruleForm2.checkPass
           }
-          // const loginLoading = this.$loading({
-          //   lock: true,
-          //   text: '登录中,请稍后。。。',
-          //   spinner: "el-icon-loading"
-          // });
-          // 登录请求
-          this.$store.dispatch('LoginByUsername', params).then((res) => {
-            if (!getToken()) {
-              this.$notify({
-                title: '登录失败',
-                message: '登录失败',
-                type: 'error',
-                duration: 2000
-              })
-              // loginLoading.close()
-              return
-            }
-            // 不是陌生人
-            var iSstranger = false
-            sessionStorage.setItem("stranger", JSON.stringify({ iSstranger }));
-            this.$store.commit('changeStronger', false)
-            this.logining = false
-            // loginLoading.close()
-            this.$router.push({ path: "/" })  // 去主页
-            this.$message({
-              message: '晚上好，小宝贝',
-              type: 'success',
-              duration: 3 * 1000
-            })
-
-          }).catch((error) => {
-            console.log(error)
-            if (error.response) {
-              this.$message({
-                message: error.response.data.errorMsg || '用户名或密码错误，登录失败',
-                type: 'error',
-                duration: 5 * 1000
-              })
-            }
-          }).finally(() => {
-            this.logining = false
-            // loginLoading.close()
-          })
+          this.loginHandle(params)
         } else {
           this.logining = false
           console.log('error submit!!')
@@ -180,6 +188,50 @@ export default {
         }
       })
     },
+    loginHandle (params) {
+      // 传入登录方法
+      this.$store.dispatch(this.loginMethod, params).then((res) => {
+        if (!getToken()) {
+          this.$notify({
+            title: '登录失败',
+            message: '登录失败',
+            type: 'error',
+            duration: 2000
+          })
+          // loginLoading.close()
+          return
+        }
+        // 不是陌生人
+        var iSstranger = false
+        sessionStorage.setItem("stranger", JSON.stringify({ iSstranger }));
+        this.$store.commit('changeStronger', false)
+        this.logining = false
+        // loginLoading.close()
+        this.$router.push({ path: "/" })  // 去主页
+        this.$message({
+          message: '晚上好，小宝贝',
+          type: 'success',
+          duration: 3 * 1000
+        })
+
+      }).catch((error) => {
+        console.log(error)
+        if (error.response) {
+          this.$message({
+            message: error.response.data.errorMsg || '用户名或密码错误，登录失败',
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }
+      }).finally(() => {
+        this.logining = false
+        // loginLoading.close()
+      })
+
+    },
+
+
+
     // 密码显示
     showPwd () {
       if (this.passwordType === 'password') {
@@ -192,21 +244,130 @@ export default {
       // 陌生人登录
       var loginName = 'myFriend'
       sessionStorage.setItem("user", JSON.stringify({ loginName }));
-      sessionStorage.setItem("navFlag", JSON.stringify({navFlag:false }));
+      sessionStorage.setItem("navFlag", JSON.stringify({ navFlag: false }));
 
-      this.dirloginLoad = true
+      this.dirloginLoad4 = true
       setTimeout(() => {
-        this.dirloginLoad = false
+        this.dirloginLoad4 = false
         this.$router.push({ path: "/" })
         this.$message({
-              message: 'hello，朋友',
-              type: 'success',
-              duration: 3 * 1000
-            })
+          message: 'hello，朋友',
+          type: 'success',
+          duration: 3 * 1000
+        })
       }, 2000);
-     
+
       this.$store.commit('changeStronger', true)
-    }
+    },
+    // 邮箱登入
+    emailHandle () {
+      this.isPhone = false
+      this.isEmail = true,
+        this.loginMethod = 'LoginByEmailname'
+    },
+    phoneHandle () {
+      this.isPhone = true
+      this.isEmail = false
+      this.loginMethod = 'LoginByUsername'
+    },
+    // 二维码登入
+    async qrHandle () {
+      this.loginMethod = 'LoginCheckQrState'
+      this.dirloginLoad3 = true
+      var key = await this.getKey()
+      this.unikey = key
+      getErWeiMaImg(key).then(response => {
+
+        // 显示二维码
+        this.erWeiMaSrc = response.data.data.qrimg
+        this.isUserOrQr = false
+        this.dirloginLoad3 = false
+
+        // 轮询的查看二维码接口的状态
+        this.checkQrState()
+
+      })
+
+    },
+    getKey () {
+      return geterWeiMaKey().then(response => {
+        return response.data.data.unikey
+
+      })
+    },
+    // 二维码登录的细节信息，需要轮询查看二维码接口的状态
+    checkQrState () {
+      var that = this
+      this.timeId = setInterval(() => {
+        that.checkloginHandle(this.unikey)
+      }, 3000);
+    },
+
+    checkloginHandle (key) {
+
+      this.$store.dispatch(this.loginMethod, key).then(res => {
+
+        if (res.code == 803) {
+          // 登录成功
+          clearInterval(this.timeId)
+          this.qrLoginHandle()
+        }
+        // 二维码失效，重新发起二维码
+        if (res.code == 800) {
+
+          clearInterval(this.timeId)
+
+        }
+      })
+
+    },
+    qrLoginHandle () {
+      // 传入登录方法
+      if (!getToken()) {
+        this.$notify({
+          title: '登录失败',
+          message: '登录失败',
+          type: 'error',
+          duration: 2000
+        })
+        // loginLoading.close()
+        return
+      }
+      // 不是陌生人
+      var iSstranger = false
+      sessionStorage.setItem("stranger", JSON.stringify({ iSstranger }));
+      this.$store.commit('changeStronger', false)
+      this.logining = false
+      this.getUserInfo()
+    },
+    // 二维码登录，获取用户信息
+    getUserInfo () {
+      get("api/user/account")
+        .then(response => {
+          // console.log("歌单", response);
+          var loginName = response.data.profile.nickname;
+          var userId = response.data.account.id;
+          var userImage = response.data.profile.avatarUrl;
+          sessionStorage.setItem("user", JSON.stringify({ loginName }));
+          sessionStorage.setItem("userId", JSON.stringify({ userId }));
+          sessionStorage.setItem("userImage", JSON.stringify({ userImage }));
+
+          this.$router.push({ path: "/" })  // 去主页
+          this.$message({
+            message: '晚上好，小宝贝',
+            type: 'success',
+            duration: 3 * 1000
+          })
+
+        })
+        .catch(e => {
+          console.log(e);
+        })
+        .finally(e => {
+          this.$router.push({ path: "/" })  // 去主页
+        });
+    },
+
   }
 };
 </script>
@@ -265,7 +426,10 @@ export default {
   cursor: pointer;
   user-select: none;
 }
-
+.qrClass {
+  width: 100%;
+  height: auto;
+}
 label.el-checkbox.remember {
   margin: 0px 0px 35px 0px;
 }

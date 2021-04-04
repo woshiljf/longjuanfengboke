@@ -13,7 +13,10 @@ const MyTest = {
         searchOutCome: null,
         searchInfo: {},
         stronger: false,
-        navFlag: true
+        navFlag: true,
+        singId: 0, // 歌曲id
+        singerDetail: {},
+        playListData: []
 
     },
 
@@ -65,7 +68,15 @@ const MyTest = {
         changeNavFlag(state, f) {
             state.navFlag = f
         },
-
+        commitSingId(state, id) {
+            state.singId = id
+        },
+        changeSingerInfo(state, data) {
+            state.singerDetail = data
+        },
+        changePlayListCatgory(state, data) {
+            state.playListData = data
+        }
 
     },
     // 主要处理一些异步请求，请求回来的数据，重新改变state的属性，在经过mutations来改变
