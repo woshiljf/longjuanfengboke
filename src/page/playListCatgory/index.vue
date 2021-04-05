@@ -4,18 +4,21 @@
       <div class="main-content">
 
         <div class="block1111">
-          <span>{{value|transform(value)}}</span>
-          <el-cascader v-model="value" :options="options" clearable @change="handleChange" placeholder="选择分类">
-          </el-cascader>
+
+          <div class="choose">
+            <el-cascader v-model="value" :options="options" clearable @change="handleChange" placeholder="选择分类">
+            </el-cascader>
+          </div>
         </div>
         <div>
           <hr />
         </div>
-        <div class="suggestion-sing" v-loading="loading" element-loading-text="拼命加载中"
-          element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+        <div class="suggestion-sing">
           <div class="hot-sug">
             <ul class="sugImg">
-              <li class="sug-sings" v-for="item in personData" :key="item.id">
+              <li class="sug-sings" v-for="item in personData" :key="item.id" v-loading="loading"
+                element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(0, 0, 0, 0.8)">
                 <div class="sug-class" @click="goToPlayList(item.id);">
                   <img :src="item.coverImgUrl" alt="" />
                   <div class="desciptionClass">
@@ -26,10 +29,11 @@
               </li>
             </ul>
           </div>
+
         </div>
-      </div>
-      <div>
-        <hr />
+        <div>
+          <hr />
+        </div>
       </div>
     </div>
   </div>
@@ -170,9 +174,9 @@ ul {
   margin: 0;
 }
 .block1111 {
-  width: 50%;
-  margin-left: 100px;
+  margin-left: 155px;
 }
+
 .playListCatgary,
 .dash-container {
   margin-top: 100px;
@@ -202,6 +206,7 @@ ul {
   /* border: 1px solid #ccc; */
   height: 100%;
   float: left;
+  overflow: scroll;
 }
 
 .hot-sug {
