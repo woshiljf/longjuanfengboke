@@ -4,25 +4,11 @@
       <div>
         <div class="songsList">
           <h1>二分查找</h1>
-          <div class="block">
-            <div class="playControl">
-              <div class="iconClass">
-                <i class="el-icon-caret-left"></i>
-              </div>
-
-              <div class="iconClass">
-                <i class="el-icon-video-pause"></i>
-              </div>
-
-              <div class="iconClass">
-                <i class="el-icon-caret-right"></i>
-              </div>
-
-            </div>
-            <div class="navBar">
-              <el-slider v-model="value3" :show-tooltip="false"></el-slider>
-            </div>
+          <el-button type="primary" @click="getType">点我一下</el-button>
+          <div class="block1111">
+            <el-cascader v-model="value" :options="options" clearable @change="handleChange"></el-cascader>
           </div>
+
         </div>
       </div>
     </div>
@@ -30,9 +16,7 @@
 </template>
 
 <script>
-
-// import testMd from "@/alogthum/dp/1.md"
-
+import { get } from "@/utils/request";
 export default {
   name: 'towFind',
   components: {
@@ -40,23 +24,65 @@ export default {
   },
   data () {
     return {
-      singInformation: "",
-      value3: '35',
-      name: '动态规划算法练习',
-      tableloading: false
+      value: [],
+      options: []
     };
   },
   created () {
     //  this.value = testMd
   },
   methods: {
+    getType () {
+
+      get('api/playlist/catlist').then(res => {
+
+        var categories = res.data.categories
+        var sub = res.data.sub
+        this.dataFilter(categories, sub)
+      })
+    },
+    dataFilter (categories, sub) {
+
+      // 风格过滤
+      for (const key in categories) {
+        if (Object.hasOwnProperty.call(categories, key)) {
+          var obj = {}
+          obj['value'] = key
+          obj['label'] = categories[key]
+          this.options.push(obj)
+        }
+      }
+      var options = this.options
+      for (let i = 0; i < options.length; i++) {
+        var item = options[i]
+        item['children'] = []
+        for (let j = 0; j < sub.length; j++) {
+          var cat = sub[j]
+          if (cat.category == item.value) {
+            var ran = Math.random()
+            item['children'].push({
+              value: cat.name,
+              label: cat.name
+            })
+          }
+        }
+
+      }
+
+
+
+    },
+    handleChange (tag) {
+      console.log(tag);
+    }
   }
 };
 </script>
 
-<style scoped>
-.block {
+<style>
+.block1111 {
   display: flex;
+  width: 50%;
 }
 .playControl {
   vertical-align: bottom;
@@ -90,5 +116,13 @@ export default {
 }
 .hljs-string {
   color: #032f62;
+}
+/* 修改面板 */
+.el-cascader-menu:nth-child(2) .el-cascader-node {
+  float: left !important;
+}
+
+.el-cascader-panel {
+  width: 500px !important;
 }
 </style>

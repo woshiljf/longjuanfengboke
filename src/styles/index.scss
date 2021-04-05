@@ -217,3 +217,26 @@ code {
     border-radius: 1em;
     background-color: rgba(50, 50, 50, .1);
 }
+
+
+/* 修改面板 */
+
+.el-cascader-menu:nth-child(2) .el-cascader-node {
+    float: left !important;
+}
+
+.el-cascader-panel {
+    width: 800px !important;
+}
+
+.el-slider__bar {
+    background-color: red;
+}
+
+.el-tabs__item {
+    color: #fff;
+}
+
+.el-tabs__item:hover {
+    color: red;
+}

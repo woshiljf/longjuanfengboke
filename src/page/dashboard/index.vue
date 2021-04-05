@@ -16,10 +16,20 @@
       </div>
 
       <div class="main-content">
-        <div>
-          <hr />
+
+        <div class="suggestionType" style="color: white">
+          <el-tabs v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="热门推荐" name="1">热门推荐</el-tab-pane>
+            <el-tab-pane label="华语" name="2"></el-tab-pane>
+            <el-tab-pane label="流行" name="3"></el-tab-pane>
+            <el-tab-pane label="摇滚" name="4"></el-tab-pane>
+            <el-tab-pane label="民谣" name="5"></el-tab-pane>
+            <el-tab-pane label="电子" name="6"></el-tab-pane>
+            <el-tab-pane class="more" label="更多" name="7" style="position: absolute;right: 0"></el-tab-pane>
+          </el-tabs>
         </div>
-        <div class="suggestion-sing">
+        <div class="suggestion-sing" v-loading="loading" element-loading-text="拼命加载中"
+          element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
           <div class="hot-sug">
             <ul class="sugImg">
               <li class="sug-sings" v-for="item in personData" :key="item.id">
@@ -50,6 +60,7 @@ import {
 import { getHomeLubo } from "../../api/getHomeLubotu";
 import { getuserplaylist } from "../../api/userlikesings";
 import staticData from "@/textResources/staticData.js"
+import { getPlayListCatgary } from "@/api/getSingerDetail";
 export default {
   data () {
     return {
@@ -61,6 +72,7 @@ export default {
       styleSuggestion: [],
       personData: staticData,
       newalbums: [],
+      loading: false
     };
   },
   created () {
@@ -136,10 +148,50 @@ export default {
         }
       });
     },
-
-    handleClick () {
-      console.log("a");
+    //  获取歌单类型
+    handleClick (e) {
+      this.loading = true
+      if (e.label == '热门推荐' || e.label == '更多') {
+        e.label = '全部'
+      }
+      this.getTagInfo(e.label)
     },
+    // 获取标签的歌单
+    getTagInfo (tag) {
+      getPlayListCatgary(50, tag, 50)
+        .then(response => {
+
+          var responseData = response.data.playlists
+          var data = []
+          // 对数据过滤一下，选取有用的就行
+          for (let i = 0; i < responseData.length; i++) {
+
+            var obj = {}
+            var temp = responseData[i]
+            obj['coverImgUrl'] = temp['coverImgUrl']
+            obj['id'] = temp['id']
+            obj['name'] = temp['name']
+            obj['description'] = temp['description']
+            obj['userId'] = temp['userId']
+            obj['creator'] = temp['creator'].nickname
+            data.push(obj)
+          }
+          // 跳转到分类歌单
+          this.loading = false
+          this.$store.commit('changePlayListCatgory', data)
+          this.$router.push({
+            name: 'playListCatgory',
+          })
+        })
+        .catch(e => {
+          console.log(e);
+        })
+        .finally(e => {
+
+          console.log(e);
+        });
+    },
+
     handleClose (done) {
       this.$confirm('确认关闭？')
         .then(_ => {
@@ -180,6 +232,10 @@ ul {
   /* border: 1px solid #ccc; */
   height: 100%;
   float: left;
+}
+.suggestionType {
+  margin: 0 150px;
+  color: #fff;
 }
 .lunbotumain {
   width: 100%;

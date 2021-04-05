@@ -1,11 +1,18 @@
 <template>
-  <div class="playListCatgary dashboard">
+  <div class="playListCatgary playListCatgarydashboard">
     <div class="dash-container">
       <div class="main-content">
+
+        <div class="block1111">
+          <span>{{value|transform(value)}}</span>
+          <el-cascader v-model="value" :options="options" clearable @change="handleChange" placeholder="选择分类">
+          </el-cascader>
+        </div>
         <div>
           <hr />
         </div>
-        <div class="suggestion-sing">
+        <div class="suggestion-sing" v-loading="loading" element-loading-text="拼命加载中"
+          element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
           <div class="hot-sug">
             <ul class="sugImg">
               <li class="sug-sings" v-for="item in personData" :key="item.id">
@@ -29,18 +36,32 @@
 </template>
 <script>
 import { mapState } from 'vuex'
+import { get } from "@/utils/request";
+import { getPlayListCatgary } from "@/api/getSingerDetail";
 export default {
   data () {
     return {
+      value: ['1', '全部'],
+      options: [],
+      loading: false
     };
   },
   created () {
-    console.log(this.personData);
+
+  },
+  mounted () {
+    this.getType()
   },
   computed: {
     ...mapState({
       personData: state => state.myTest.playListData
     })
+  },
+  filters: {
+    transform (value) {
+      return value[1]
+    }
+
   },
   methods: {
 
@@ -61,7 +82,85 @@ export default {
           done();
         })
         .catch(_ => { });
-    }
+    },
+    getType () {
+
+      get('api/playlist/catlist').then(res => {
+
+        var categories = res.data.categories
+        var sub = res.data.sub
+        this.dataFilter(categories, sub)
+      })
+    },
+    dataFilter (categories, sub) {
+
+      // 风格过滤
+      for (const key in categories) {
+        if (Object.hasOwnProperty.call(categories, key)) {
+          var obj = {}
+          obj['value'] = key
+          obj['label'] = categories[key]
+          this.options.push(obj)
+        }
+      }
+      var options = this.options
+      for (let i = 0; i < options.length; i++) {
+        var item = options[i]
+        item['children'] = []
+        for (let j = 0; j < sub.length; j++) {
+          var cat = sub[j]
+          if (cat.category == item.value) {
+            item['children'].push({
+              value: cat.name,
+              label: cat.name
+            })
+          }
+        }
+
+      }
+    },
+    // 重新获取分类歌曲
+    handleChange (tag) {
+      this.loading = true
+      this.handleClick(tag[1])
+    },
+    //  获取歌单类型
+    handleClick (type) {
+
+      this.getTagInfo(type)
+    },
+    // 获取标签的歌单
+    getTagInfo (tag) {
+      getPlayListCatgary(50, tag, 50)
+        .then(response => {
+
+          var responseData = response.data.playlists
+          var data = []
+          // 对数据过滤一下，选取有用的就行
+          for (let i = 0; i < responseData.length; i++) {
+
+            var obj = {}
+            var temp = responseData[i]
+            obj['coverImgUrl'] = temp['coverImgUrl']
+            obj['id'] = temp['id']
+            obj['name'] = temp['name']
+            obj['description'] = temp['description']
+            obj['userId'] = temp['userId']
+            obj['creator'] = temp['creator'].nickname
+            data.push(obj)
+          }
+          // 跳转到分类歌单
+          this.loading = false
+          this.$store.commit('changePlayListCatgory', data)
+        })
+        .catch(e => {
+          console.log(e);
+        })
+        .finally(e => {
+
+          console.log(e);
+        });
+    },
   }
 };
 </script>
@@ -70,12 +169,16 @@ ul {
   padding: 0;
   margin: 0;
 }
-
-.playListCatgary {
+.block1111 {
+  width: 50%;
+  margin-left: 100px;
+}
+.playListCatgary,
+.dash-container {
   margin-top: 100px;
 }
 
-.dashboard {
+.playListCatgarydashboard {
   width: 100%;
   color: #fff;
   min-width: 1420px;
@@ -156,9 +259,6 @@ ul {
   padding-left: 300px;
   background-color: #c20c0c;
 }
-.el-card {
-}
-
 /* 新碟上架部分 */
 .title {
   display: flex;

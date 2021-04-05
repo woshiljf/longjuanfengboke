@@ -99,7 +99,7 @@
             <el-button type="danger" size="mini" :loading="dirloginLoad3" @click="qrHandle">扫码登录</el-button>
           </el-tooltip>
 
-          <el-button type="danger" size="mini" :loading="dirloginLoad4" @click="directLogin">不想登录</el-button>
+          <el-button type="danger" size="mini" :loading="dirloginLoad4" @click="directLogin">随便看看</el-button>
         </div>
 
       </el-form>

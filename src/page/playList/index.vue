@@ -30,8 +30,8 @@
               </div>
               <div class="con tag">
                 <span>标签</span>
-                <el-button @click="getTagInfo(item)" round size="mini" v-for="(item, i) in playListInfo.playListTags"
-                  :key="i">{{ item }}
+                <el-button :loading="indexLoading ==i" @click="getTagInfo(item,i)" round size="mini"
+                  v-for="(item, i) in playListInfo.playListTags" :key="i">{{ item }}
                 </el-button>
               </div>
               <div class=" con dec-content">
@@ -247,7 +247,8 @@ export default {
         coverImgUrl: "", //歌单图片
         nameTitle: "" // 歌单名字标题
       },
-      songsId: 0
+      songsId: 0,
+      indexLoading: null
     };
   },
   computed: {
@@ -547,7 +548,8 @@ export default {
         }
       })
     },
-    getTagInfo (tag) {
+    getTagInfo (tag, i) {
+      this.indexLoading = i
       getPlayListCatgary(50, tag, 50)
         .then(response => {
 
@@ -568,6 +570,7 @@ export default {
           }
           // 跳转到分类歌单
           this.$store.commit('changePlayListCatgory', data)
+          this.indexLoading = null
           this.$router.push({
             name: 'playListCatgory',
           })
