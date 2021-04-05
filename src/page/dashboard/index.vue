@@ -88,18 +88,16 @@ export default {
     },
     // 获取歌单列表
     getplaylist (userId) {
-      // console.log('dahaigou');
 
-      var dataPlayList = sessionStorage.getItem("dataList");
-
-      if (Object.keys(dataPlayList).length !== 0) {
-        return;
-      } else {
+      console.log(userId);
+      if (userId !== undefined) {
         getuserplaylist(userId).then(response => {
+
           var data = response.data.playlist;
           sessionStorage.setItem("dataList", JSON.stringify({ data }));
         });
       }
+
     },
     getHome () {
       getHomeLubo().then(res => {
@@ -208,8 +206,6 @@ ul {
   padding: 0;
   margin: 0;
 }
-.sug {
-}
 .sugImg {
   display: flex;
   justify-content: center;
@@ -229,12 +225,8 @@ ul {
   cursor: pointer;
 }
 .sug-sings img {
-  width: 220px;
-  height: 220px;
-}
-.image {
-  width: 220px;
-  height: 220px;
+  width: 85%;
+  height: auto;
 }
 .el-main {
   padding: 0;

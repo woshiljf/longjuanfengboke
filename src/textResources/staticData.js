@@ -94,7 +94,7 @@ const staticData = [{
         "alg": "itembased"
     },
     {
-        "id": 2819839401,
+        "id": 28198394011,
         "type": 0,
         "name": "乐队的夏天『1-2季』",
         "copywriter": "根据你喜欢的单曲《再谈记忆》推荐",

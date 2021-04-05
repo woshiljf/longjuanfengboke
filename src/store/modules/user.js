@@ -146,10 +146,7 @@ const user = {
                 // 重新检查扫码信息
                 LoginCheckQrState(key)
                     .then(response => {
-
-                        console.log(response);
                         if (response.data.code == 803) {
-
                             if (response.data.cookie) {
                                 // console.log('用户信息', response);
                                 commit("SET_TOKEN", response.data.cookie);

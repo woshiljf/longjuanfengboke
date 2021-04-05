@@ -104,7 +104,7 @@
 
       </el-form>
 
-      <div class="login-container" v-if="!isUserOrQr">
+      <div class=" qrClassContainer login-container" v-if="!isUserOrQr">
 
         <img class="qrClass" :src="erWeiMaSrc" alt="二维码图片">
 
@@ -342,7 +342,8 @@ export default {
     },
     // 二维码登录，获取用户信息
     getUserInfo () {
-      get("api/user/account")
+      var time = new Date().getTime()
+      get("api/user/account?time=" + time)
         .then(response => {
           // console.log("歌单", response);
           var loginName = response.data.profile.nickname;
@@ -364,7 +365,6 @@ export default {
           console.log(e);
         })
         .finally(e => {
-          this.$router.push({ path: "/" })  // 去主页
         });
     },
 
@@ -417,6 +417,11 @@ export default {
   // background: #333;
   background-color: rgba(0, 0, 0, 0.376);
 }
+
+.qrClassContainer {
+  width: 400px;
+}
+
 .show-pwd {
   position: absolute;
   right: 10px;

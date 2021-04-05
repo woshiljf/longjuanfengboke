@@ -64,7 +64,7 @@ let routes = [{
         }]
     },
     {
-        path: "dashboard",
+        path: "wyyDash",
         component: home,
         single: true,
         name: "网易云首页",
@@ -74,7 +74,7 @@ let routes = [{
         iconCls: "el-icon-s-home", //图标样式class
         children: [{
             path: "/dashboard",
-            name: "网易云首页2",
+            name: "dashboard",
             component: () =>
                 import (
                     /*webpackChunkName:'importDashboard',webpackPrefetch: true*/
