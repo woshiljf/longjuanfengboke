@@ -29,7 +29,7 @@ export default {
 
   },
   mounted () {
-    console.log(this.mesg, "大海");
+    // console.log(this.mesg, "大海");
   },
 
   computed: {
