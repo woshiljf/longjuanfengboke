@@ -523,6 +523,7 @@ let routes = [{
     // { path: "*", redirect: "/error/404", hidden: true }
 ];
 var router = new VueRouter({
+    mode: 'history',
     routes
 });
 export default router;
