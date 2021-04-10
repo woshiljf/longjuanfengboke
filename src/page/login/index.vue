@@ -4,12 +4,12 @@
     <div class="loginText">
 
       <h1 style="--x: 6; --y: -6;">
-        <span style="--index: 0; --alpha-l: 0.125; --alpha-u: 0.25;">龙</span>
-        <span style="--index: 1; --alpha-l: 0.125; --alpha-u: 0.25;">卷</span>
-        <span style="--index: 2; --alpha-l: 0.125; --alpha-u: 0.25;">风</span>
-        <span style="--index: 3; --alpha-l: 0.125; --alpha-u: 0.25;">的</span>
-        <span style="--index: 4; --alpha-l: 0.125; --alpha-u: 0.25;">博</span>
-        <span style="--index: 5; --alpha-l: 0.125; --alpha-u: 0.25;">客</span>
+        <span style="--index: 0; --alpha-l: 0.125; --alpha-u: 0.25;">欢</span>
+        <span style="--index: 1; --alpha-l: 0.125; --alpha-u: 0.25;">迎</span>
+        <span style="--index: 2; --alpha-l: 0.125; --alpha-u: 0.25;">欢</span>
+        <span style="--index: 3; --alpha-l: 0.125; --alpha-u: 0.25;">迎</span>
+        <span style="--index: 4; --alpha-l: 0.125; --alpha-u: 0.25;">欢</span>
+        <span style="--index: 5; --alpha-l: 0.125; --alpha-u: 0.25;">迎</span>
       </h1>
 
       <!-- <h1 style="--x: 3; --y: -3;">
@@ -21,14 +21,14 @@
           style="--index: 5; --alpha-l: 0.25; --alpha-u: 0.5;"></span>
       </h1> -->
 
-      <h1>
+      <!-- <h1>
         <span style="--index: 0; --alpha-l: 0.5; --alpha-u: 1;">龙</span><span
           style="--index: 1; --alpha-l: 0.5; --alpha-u: 1;">卷</span><span
           style="--index: 2; --alpha-l: 0.5; --alpha-u: 1;">风</span><span
           style="--index: 3; --alpha-l: 0.5; --alpha-u: 1;">的</span><span
           style="--index: 4; --alpha-l: 0.5; --alpha-u: 1;">博</span><span
           style="--index: 5; --alpha-l: 0.5; --alpha-u: 1;">客</span>
-      </h1>
+      </h1> -->
 
     </div>
 
@@ -209,7 +209,7 @@ export default {
         // loginLoading.close()
         this.$router.push({ path: "/" })  // 去主页
         this.$message({
-          message: '晚上好，小宝贝',
+          message: 'hello hello',
           type: 'success',
           duration: 3 * 1000
         })
@@ -355,7 +355,7 @@ export default {
 
           this.$router.push({ path: "/" })  // 去主页
           this.$message({
-            message: '晚上好，小宝贝',
+            message: 'hello hello',
             type: 'success',
             duration: 3 * 1000
           })

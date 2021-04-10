@@ -12,7 +12,7 @@
           <el-menu-item index="2" @click="myMusicHandle" v-show="navFlag">我的音乐</el-menu-item>
           <el-menu-item index="3" @click="frendsHandle" v-show="navFlag">朋友</el-menu-item>
           <el-menu-item index="4" @click="shopHandle"> 前端学习记录 </el-menu-item>
-          <el-menu-item index="6" @click="happyTime">快乐一下</el-menu-item>
+          <!-- <el-menu-item index="6" @click="happyTime">快乐一下</el-menu-item> -->
           <!-- <el-menu-item index="7" @click="aboutMe" v-show="!navFlag">关于我</el-menu-item> -->
           <el-menu-item index="8" @click="myGithub">我的github</el-menu-item>
         </el-menu>

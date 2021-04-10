@@ -55,7 +55,6 @@ import {
   getHomePage,
   gerPersona,
   getNewAlbum,
-  getTop
 } from "../../api/homepage";
 import { getHomeLubo } from "../../api/getHomeLubotu";
 import { getuserplaylist } from "../../api/userlikesings";
@@ -114,11 +113,13 @@ export default {
     getHome () {
       getHomeLubo().then(res => {
         this.imgurl = res.data.banners;
+        Object.freeze(this.imgurl)
       });
     },
     getPersonList () {
       gerPersona().then(res => {
         this.personData = res.data.result.slice(0, 12);
+        Object.freeze(this.personData)
 
       });
     },
@@ -188,6 +189,8 @@ export default {
         })
         .finally(e => {
 
+          console.log(e);
+          console.log(e);
           console.log(e);
         });
     },

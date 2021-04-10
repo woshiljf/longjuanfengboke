@@ -16,11 +16,9 @@
         <div class="suggestion-sing">
           <div class="hot-sug">
             <ul class="sugImg">
-              <li class="sug-sings" v-for="item in personData" :key="item.id" v-loading="loading"
-                element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
-                element-loading-background="rgba(0, 0, 0, 0.8)">
+              <li class="sug-sings" v-for="item in personData" :key="item.id">
                 <div class="sug-class" @click="goToPlayList(item.id);">
-                  <img :src="item.coverImgUrl" alt="" />
+                  <img v-lazy="item.coverImgUrl" alt="" />
                   <div class="desciptionClass">
                     <div> {{ item.name }} </div>
                     <div> by{{ item.creator }} </div>

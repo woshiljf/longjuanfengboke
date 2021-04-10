@@ -13,14 +13,15 @@ import "@/styles/index.scss";
 // import './mock/index'
 import 'highlight.js/styles/github.css'
 import 'github-markdown-css'
+import VueLazyload from 'vue-lazyload'
 Vue.use(ElementUI);
 Vue.use(Router);
 Vue.use(VCharts);
-
+// 图片懒加载插件
+Vue.use(VueLazyload)
 Vue.config.productionTip = false;
-
 Vue.prototype.$busEvent = new Vue();
-
+console.log(1);
 /**
  * 判断当前是否登录，未登录不能跳转路由
  * 防止未登录状态下直接输入路由跳转
@@ -44,6 +45,7 @@ router.beforeEach((to, from, next) => {
 new Vue({
     el: "#app",
     store,
+    model: 'history',
     router, // 注入到根实例中
     render: h => h(App)
 });

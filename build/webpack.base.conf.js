@@ -4,6 +4,10 @@ const utils = require("./utils");
 const config = require("../config");
 const vueLoaderConfig = require("./vue-loader.conf");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const HappyPack = require('happypack')
+const os = require("os");
+//充分发挥多核的作用，进程数量设置为设备的核数
+const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 
 function resolve(dir) {
     return path.join(__dirname, "..", dir);
@@ -38,12 +42,16 @@ module.exports = {
             },
             {
                 test: /\.js$/,
-                loader: "babel-loader",
+                // loader: "babel-loader",
+                use: ["happypack/loader?id=babel"],
                 include: [
                     resolve("src"),
                     resolve("test"),
                     resolve("node_modules/webpack-dev-server/client")
-                ]
+                ],
+                // options: {
+                //     cacheDirectory: true
+                // },
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -69,6 +77,13 @@ module.exports = {
                     name: utils.assetsPath("fonts/[name].[hash:7].[ext]")
                 }
             },
+            // 配置图片压缩
+            // {
+            //     loader: 'image-webpack-loader',
+            //     options: {
+            //         bypassOnDebug: true,
+            //     }
+            // },
             {
                 test: /\.md$/,
                 loader: 'vue-markdown-loader',
@@ -84,8 +99,6 @@ module.exports = {
                     }
                 }
             }
-
-
         ]
     },
     plugins: [
@@ -93,6 +106,21 @@ module.exports = {
             template: "index.html",
             favicon: "favicon.ico",
             inject: true
+        }),
+        // 使用happypack，加快打包速度
+        new HappyPack({
+            id: 'babel',
+            loaders: [{
+                loader: "babel-loader",
+                options: {
+                    cacheDirectory: true
+                },
+            }],
+            threadPool: happyThreadPool
+        }),
+        new HappyPack({
+            id: 'css',
+            loaders: ['css-loader']
         })
     ],
     node: {
@@ -106,5 +134,6 @@ module.exports = {
         net: "empty",
         tls: "empty",
         child_process: "empty"
-    }
+    },
+    watch: true
 };
