@@ -14,7 +14,7 @@ const store = new Vuex.Store({
     state: {
         myName: "小猪佩奇"
     },
-
+    //  使用modules，组装所有的模块
     modules: {
         common,
         tagsRoute,
